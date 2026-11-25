@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محفظة Haneen Kh الإلكترونية</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+        .app-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 24px;
+            padding: 30px 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .logo {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+        h2 {
+            color: #1e3c72;
+            margin: 5px 0 20px 0;
+            font-size: 22px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #e1e5ee;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+        button {
+            width: 96%;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .visa-card {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: right;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .visa-card p {
+            margin: 5px 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .visa-card h1 {
+            margin: 5px 0 15px 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            opacity: 0.95;
+            font-weight: bold;
+        }
+        #walletSection {
+            display: none;
+        }
+        .history-box {
+            margin-top: 20px;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        .history-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 6px;
+            font-size: 13px;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+        }
+        #result {
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .dev-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="logo">💳</div>
+        <h2>محفظة Haneen Kh</h2>
+
+        <!-- شاشة تسجيل الدخول -->
+        <div id="loginSection">
+            <p style="color: #666; font-size: 14px;">أدخل الرمز السري للوصول إلى حسابك</p>
+            <input type="password" id="passInput" placeholder="••••">
+            <button onclick="checkLogin()">تسجيل الدخول</button>
+        </div>
+
+        <!-- شاشة الحساب والبطاقة -->
+        <div id="walletSection">
+            <div class="visa-card">
+                <p>الرصيد المتوفر</p>
+                <h1><span id="balanceDisplay">50,000</span> ل.س</h1>
+                <div class="card-footer">
+                    <span>Haneen Kh</span>
+                    <span>**** 4821</span>
+                </div>
+            </div>
+
+            <input type="text" id="recipientInput" placeholder="اسم المستلم (مثلاً: أخي)">
+            <input type="number" id="amountInput" placeholder="المبلغ المراد تحويله">
+            <button style="background: linear-gradient(to right, #11998e, #38ef7d);" onclick="transferMoney()">إرسال الحوالة الآن</button>
+
+            <div class="history-box" id="historyBox" style="display: none;">
+                <strong style="font-size: 14px; color: #333;">آخر العمليات:</strong>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <p id="result"></p>
+        <div class="dev-footer">تطوير وبرمجة: Haneen Kh</div>
+    </div>
+
+    <script>
+        let savedPassword = "1234";
+        let balance = 50000;
+
+        function checkLogin() {
+            let enteredPassword = document.getElementById("passInput").value;
+            let resultText = document.getElementById("result");
+
+            if (enteredPassword === savedPassword) {
+                document.getElementById("loginSection").style.display = "none";
+                document.getElementById("walletSection").style.display = "block";
+                resultText.innerText = "";
+            } else {
+                resultText.style.color = "#e74c3c";
+                resultText.innerText = "⚠️ الرمز السري غير صحيح! حاول مرة أخرى.";
+            }
+        }
+
+        function transferMoney() {
+            let recipient = document.getElementById("recipientInput").value || "مستلم";
+            let transferAmount = Number(document.getElementById("amountInput").value);
+            let resultText = document.getElementById("result");
+
+            if (transferAmount > 0 && transferAmount <= balance) {
+                balance = balance - transferAmount;
+                document.getElementById("balanceDisplay").innerText = balance.toLocaleString();
+                
+                resultText.style.color = "#27ae60";
+                resultText.innerText = "✅ تم تحويل " + transferAmount.toLocaleString() + " إلى " + recipient;
+
+                document.getElementById("historyBox").style.display = "block";
+                let historyList = document.getElementById("historyList");
+                historyList.innerHTML = `<div class="history-item"><span>تحويل إلى: ${recipient}</span><span style="color:red;">-${transferAmount.toLocaleString()}</span></div>` + historyList.innerHTML;
+
+                document.getElementById("amountInput").value = "";
+                document.getElementById("recipientInput").value = "";
+            } else {
+                resultText.style.color = "#e74c3c";
+                resultText.innerText = "⚠️ عذراً، المبلغ غير صالح أو الرصيد غير كافٍ!";
+            }
+        }
+    </script>
+
+</body>
+</html>
